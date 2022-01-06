@@ -1,15 +1,8 @@
-Feature: What happens when Player 1 starts the Game
-
-    Scenario: A Game should be configured before it can be started
-        Given a Game without a Configuration
-        When a Player tries to start the Game
-        Then deny the Player
-        And notify the Player that the Game cannot be started without a Configuration
+Feature: What happens when a User starts the Game
 
     Scenario: The winner of the Coin Flip should start their Turn first
-        Given 2 Players
-        And a Coin
-        And the Game's Configuration
-        When the Game is started
-        Then flip the Coin
-        And save which Player won the Coin flip to the Configuration
+        Given I am Player 1
+        When I want to start the Game
+        Then ask Player 2 what side of the Coin they think it will land on
+        And flip the Coin
+        And whoever wins the Coin flip gets start their Turn first
