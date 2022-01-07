@@ -1,12 +1,9 @@
 Feature: Players should be able to place their Battleships on the Grid
 
-    Background:
-        Given I am Player 1
-        And my Grid
-
     Scenario: Battleships should never overlap
-        Given I am choosing to place a Battleship on the Grid
-        And an already placed Battleship
+        Given I am Player 1
+        And a size 5 Grid
+        And my "Small" Battleship at 1, 3 "horizontally"
         When I try to place my Battleship onto another Battleship
         Then I should not be able to place the Battleship
 
