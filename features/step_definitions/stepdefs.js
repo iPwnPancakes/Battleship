@@ -75,8 +75,5 @@ When('I try to place my {string} Battleship onto {int}, {int} {string}', functio
 Then('I should not be able to place the Battleship', function () {
     const player = this.context.game.getPlayer(this.context.iam);
 
-    const { x, y, direction, ...context } = this.context.intent;
-    const sizeDescriptor = context.battleship.sizeDescriptor;
-
-    expect(() => player.setBattleship(sizeDescriptor, x, y, direction)).to.throw(Error);
+    expect(() => player.grid.place(this.context.intent)).to.throw(Error);
 });
