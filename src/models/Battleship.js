@@ -1,5 +1,7 @@
 class Battleship {
     constructor(sizeDescriptor) {
+        this.sizeDescriptor = sizeDescriptor;
+
         if (sizeDescriptor === 'large') {
             this.size = 5;
         } else if (sizeDescriptor === 'medium') {

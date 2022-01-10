@@ -1,5 +1,6 @@
 const { Grid } = require('./Grid');
 const { Battleship } = require('./Battleship');
+const { IntentToPlace } = require('./IntentToPlace');
 
 class Player {
     /**
@@ -48,8 +49,9 @@ class Player {
         }
 
         const battleship = this.getAvailableBattleship(battleshipSize);
+        const intent = new IntentToPlace(battleship, x, y, direction);
 
-        this.grid.place(battleship, x, y, direction);
+        this.grid.place(intent);
     }
 
     hasAvailableBattleship(size) {

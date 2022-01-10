@@ -1,3 +1,5 @@
+const { IntentToPlace } = require('./IntentToPlace');
+
 class Grid {
     /**
      *
@@ -11,45 +13,24 @@ class Grid {
     /**
      * Places the top-left corner of a battleship onto the board in the direction specified
      *
-     * @param {Battleship} battleship
-     * @param {Number} topLeftX
-     * @param {Number} topLeftY
-     * @param {String} direction
+     * @param {IntentToPlace} intent
      *
      * @return void
      */
-    place(battleship, topLeftX, topLeftY, direction) {
-        const isBattleshipTopLeftOnTheGrid = topLeftX > this.size || topLeftX < 0 || topLeftY > this.size || topLeftY < 0;
-        if (isBattleshipTopLeftOnTheGrid) {
-            throw new Error('Invalid coordinates');
-        }
+    place(intent) {
+        this._isValidPlacement(intent);
 
-        if (direction !== 'horizontally' && direction !== 'vertically') {
-            throw new Error('Invalid direction');
-        }
+        if (intent.direction === 'horizontally') {
+            const newRow = new Array(this.size - intent.y).fill(intent.battleship);
 
-        let bottomRightCoordinate = [];
-        if(direction === 'horizontally') {
-            bottomRightCoordinate = [topLeftY, topLeftX + battleship.size];
+            this.grid[intent.x - 1].splice(intent.y - 1, intent.y - intent.battleship.size, ...newRow);
         } else {
-            bottomRightCoordinate = [topLeftY + battleship.size, topLeftX];
-        }
-
-        if(bottomRightCoordinate[0] > this.size || bottomRightCoordinate[1] > this.size) {
-            throw new Error('Invalid placement');
-        }
-
-        if(direction === 'horizontally') {
-            for (let i = topLeftX; i < topLeftX + battleship.size; i++) {
-                this.grid[topLeftY + i][topLeftX] = battleship;
-            }
-        } else {
-            
+            throw new Error('Not yet implemented');
         }
     }
 
     hasBattleshipAt(x, y) {
-        const itemAtCoordinate = this.grid[x][y] ?? null;
+        const itemAtCoordinate = this.grid[x - 1][y - 1] ?? null;
 
         return itemAtCoordinate !== null;
     }
@@ -72,6 +53,42 @@ class Grid {
         }
 
         return grid;
+    }
+
+    /**
+     *
+     * @param intent
+     * @private
+     *
+     * @return void
+     *
+     * @throws {Error} Throws if anything is wrong with the intent
+     */
+    _isValidPlacement(intent) {
+        const isBattleshipCompletelyOnTheGrid = intent.x > this.size || intent.x < 0 || intent.y > this.size || intent.y < 0;
+        if (isBattleshipCompletelyOnTheGrid) {
+            throw new Error('Invalid coordinates');
+        }
+
+        if (intent.direction !== 'horizontally' && intent.direction !== 'vertically') {
+            throw new Error('Invalid direction');
+        }
+
+        let bottomRightCoordinate = intent.direction === 'horizontally' ?
+            [intent.x, intent.y + intent.battleship.size] :
+            [intent.x + intent.battleship.size, intent.y];
+
+        if (bottomRightCoordinate[0] > this.size || bottomRightCoordinate[1] > this.size) {
+            throw new Error('Battleship cannot be placed at ' + bottomRightCoordinate[0] + ', ' + bottomRightCoordinate[1]);
+        }
+
+        if (intent.direction === 'horizontally') {
+            for (let i = intent.y; i < intent.y + intent.battleship.size; i++) {
+                if (this.hasBattleshipAt(intent.x, i)) {
+                    throw new Error('Battleship already placed at ' + intent.x + ', ' + i);
+                }
+            }
+        }
     }
 }
 

@@ -3,6 +3,7 @@ const { Given, When, Then } = require('@cucumber/cucumber');
 const { Player } = require('../../src/models/Player');
 const { Game } = require('../../src/models/Game');
 const { Grid } = require('../../src/models/Grid');
+const { IntentToPlace } = require('../../src/models/IntentToPlace');
 
 Given('I am Player {int}', function (playerNum) {
     const game = new Game();
@@ -37,24 +38,45 @@ Given('it is Player {int}\'s Turn', function (int) {
 });
 
 Given('my {string} Battleship', function (battleshipSize) {
-    const grid = new Grid(5);
     const playerInContext = this.context.game.getPlayer(this.context.iam);
 
     playerInContext.giveBattleships(battleshipSize, 1);
 
     expect(playerInContext.battleships[battleshipSize]).to.equal(1);
-
-    playerInContext.setGrid(grid);
-    playerInContext.setBattleship(battleshipSize, 1, 1, 'horizontal');
-
-    expect(grid.hasBattleshipAt(1, 1)).to.equal(true);
+    expect(playerInContext.hasAvailableBattleship(battleshipSize)).to.equal(true);
 });
 
 Given('my {string} Battleship at {int}, {int} {string}', function (battleshipSize, x, y, direction) {
     const player = this.context.game.getPlayer(this.context.iam);
 
     player.giveBattleships(battleshipSize, 1);
-    player.setBattleship(battleshipSize, x,  y, direction)
+    player.setBattleship(battleshipSize, x, y, direction);
 
-    expect(player.hasBattleshipAt(x, y)).to.be.true();
+    expect(player.hasBattleshipAt(x, y)).to.equal(true);
+});
+
+When('I try to place my {string} Battleship onto {int}, {int} {string}', function (size, x, y, direction) {
+    const player = this.context.game.getPlayer(this.context.iam);
+
+    player.giveBattleships(size, 1);
+    expect(player.hasAvailableBattleship(size)).to.equal(true);
+
+    const battleship = player.getAvailableBattleship(size);
+    const intent = new IntentToPlace(battleship, x, y, direction);
+
+    expect(intent.battleship).to.equal(battleship);
+    expect(intent.x).to.equal(x);
+    expect(intent.y).to.equal(y);
+    expect(intent.direction).to.equal(direction);
+
+    this.context.intent = intent;
+});
+
+Then('I should not be able to place the Battleship', function () {
+    const player = this.context.game.getPlayer(this.context.iam);
+
+    const { x, y, direction, ...context } = this.context.intent;
+    const sizeDescriptor = context.battleship.sizeDescriptor;
+
+    expect(() => player.setBattleship(sizeDescriptor, x, y, direction)).to.throw(Error);
 });
