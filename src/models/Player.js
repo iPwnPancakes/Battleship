@@ -24,6 +24,10 @@ class Player {
         }
     }
 
+    setAvailableBattleships(size, amount) {
+        this.battleships[size] = amount;
+    }
+
     /**
      *
      * @param {Grid} grid
@@ -39,13 +43,9 @@ class Player {
      * @param {Number} y
      * @param {String} direction
      */
-    setBattleship(battleshipSize, x, y, direction) {
+    place(battleshipSize, x, y, direction) {
         if (!this.grid) {
             throw new Error('Cannot set a battleship without a grid');
-        }
-
-        if (!this.hasAvailableBattleship(battleshipSize)) {
-            throw new Error('Player does not have that size battleship available');
         }
 
         const battleship = this.getAvailableBattleship(battleshipSize);
@@ -55,11 +55,17 @@ class Player {
     }
 
     hasAvailableBattleship(size) {
-        return true;
+        return this.battleships[size] > 0;
     }
 
     getAvailableBattleship(size) {
-        return new Battleship();
+        if(this.hasAvailableBattleship(size)) {
+            this.battleships[size]--;
+
+            return new Battleship(size);
+        }
+
+        throw new Error('Player does not have that size battleship available');
     }
 
     hasBattleshipAt(x, y) {

@@ -25,7 +25,9 @@ class Grid {
 
             this.grid[intent.x - 1].splice(intent.y - 1, intent.y - intent.battleship.size, ...newRow);
         } else {
-            throw new Error('Not yet implemented');
+            for (let i = intent.x; i < intent.x + intent.battleship.size; i++) {
+                this.grid[i - 1].splice(intent.y - 1, 1, intent.battleship);
+            }
         }
     }
 
@@ -33,10 +35,6 @@ class Grid {
         const itemAtCoordinate = this.grid[x - 1][y - 1] ?? null;
 
         return itemAtCoordinate !== null;
-    }
-
-    getBattleshipAt(x, y) {
-        return this.grid[x][y];
     }
 
     /**
@@ -75,8 +73,8 @@ class Grid {
         }
 
         let bottomRightCoordinate = intent.direction === 'horizontally' ?
-            [intent.x, intent.y + intent.battleship.size] :
-            [intent.x + intent.battleship.size, intent.y];
+            [intent.x, (intent.y + intent.battleship.size - 1)] :
+            [intent.x + (intent.battleship.size - 1), intent.y];
 
         if (bottomRightCoordinate[0] > this.size || bottomRightCoordinate[1] > this.size) {
             throw new Error('Battleship cannot be placed at ' + bottomRightCoordinate[0] + ', ' + bottomRightCoordinate[1]);

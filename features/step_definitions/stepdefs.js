@@ -50,9 +50,22 @@ Given('my {string} Battleship at {int}, {int} {string}', function (battleshipSiz
     const player = this.context.game.getPlayer(this.context.iam);
 
     player.giveBattleships(battleshipSize, 1);
-    player.setBattleship(battleshipSize, x, y, direction);
+    expect(player.hasAvailableBattleship(battleshipSize));
 
+    player.place(battleshipSize, x, y, direction);
     expect(player.hasBattleshipAt(x, y)).to.equal(true);
+});
+
+Given('{int} {string} Battleships available', function (amount, size) {
+    const player = this.context.game.getPlayer(this.context.iam);
+
+    player.setAvailableBattleships(size, amount);
+
+    if (amount === 0) {
+        expect(player.hasAvailableBattleship(size)).to.equal(false);
+    } else {
+        expect(player.hasAvailableBattleship(size)).to.equal(true);
+    }
 });
 
 When('I try to place my {string} Battleship onto {int}, {int} {string}', function (size, x, y, direction) {
@@ -75,5 +88,27 @@ When('I try to place my {string} Battleship onto {int}, {int} {string}', functio
 Then('I should not be able to place the Battleship', function () {
     const player = this.context.game.getPlayer(this.context.iam);
 
-    expect(() => player.grid.place(this.context.intent)).to.throw(Error);
+    const { battleship, x, y, direction } = this.context.intent;
+
+    expect(() => player.place(battleship.sizeDescriptor, x, y, direction)).to.throw(Error);
+});
+
+Then('I should be able to place the Battleship', function () {
+    const player = this.context.game.getPlayer(this.context.iam);
+
+    const { battleship, x, y, direction } = this.context.intent;
+
+    expect(() => player.place(battleship.sizeDescriptor, x, y, direction)).to.not.throw(Error);
+});
+
+Then('and see my Battleship at {int}, {int}', function (x, y) {
+    const player = this.context.game.getPlayer(this.context.iam);
+
+    expect(player.hasBattleshipAt(x, y)).to.equal(true);
+});
+
+Then('I should have {int} {string} Battleships', function (amount, size) {
+    const player = this.context.game.getPlayer(this.context.iam);
+
+    expect(player.battleships[size]).to.equal(amount);
 });
