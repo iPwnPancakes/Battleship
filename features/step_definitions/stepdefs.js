@@ -9,21 +9,18 @@ Given('I am Player {int}', function (playerNum) {
     const game = new Game();
     const player = new Player(playerNum);
 
-    game.setPlayer(1, player);
+    game.setPlayer(playerNum, player);
+    game.setCurrentPlayer(playerNum);
 
     expect(player.number).to.equal(playerNum);
     expect(game.player1).to.equal(player);
 
-    this.context = {
-        ...this.context ?? {},
-        iam: playerNum,
-        game
-    };
+    this.context = { game };
 });
 
 Given('a size {int} Grid', function (size) {
     const grid = new Grid(size);
-    const player = this.context.game.getPlayer(this.context.iam);
+    const player = this.context.game.getCurrentPlayer();
 
     player.setGrid(grid);
 
@@ -38,7 +35,7 @@ Given('it is Player {int}\'s Turn', function (int) {
 });
 
 Given('my {string} Battleship', function (battleshipSize) {
-    const playerInContext = this.context.game.getPlayer(this.context.iam);
+    const playerInContext = this.context.game.getCurrentPlayer();
 
     playerInContext.giveBattleships(battleshipSize, 1);
 
@@ -47,7 +44,7 @@ Given('my {string} Battleship', function (battleshipSize) {
 });
 
 Given('my {string} Battleship at {int}, {int} {string}', function (battleshipSize, x, y, direction) {
-    const player = this.context.game.getPlayer(this.context.iam);
+    const player = this.context.game.getCurrentPlayer();
 
     player.giveBattleships(battleshipSize, 1);
     expect(player.hasAvailableBattleship(battleshipSize));
@@ -57,7 +54,7 @@ Given('my {string} Battleship at {int}, {int} {string}', function (battleshipSiz
 });
 
 Given('{int} {string} Battleships available', function (amount, size) {
-    const player = this.context.game.getPlayer(this.context.iam);
+    const player = this.context.game.getCurrentPlayer();
 
     player.setAvailableBattleships(size, amount);
 
@@ -69,7 +66,7 @@ Given('{int} {string} Battleships available', function (amount, size) {
 });
 
 When('I try to place my {string} Battleship onto {int}, {int} {string}', function (size, x, y, direction) {
-    const player = this.context.game.getPlayer(this.context.iam);
+    const player = this.context.game.getCurrentPlayer();
 
     player.giveBattleships(size, 1);
     expect(player.hasAvailableBattleship(size)).to.equal(true);
@@ -86,7 +83,7 @@ When('I try to place my {string} Battleship onto {int}, {int} {string}', functio
 });
 
 Then('I should not be able to place the Battleship', function () {
-    const player = this.context.game.getPlayer(this.context.iam);
+    const player = this.context.game.getCurrentPlayer();
 
     const { battleship, x, y, direction } = this.context.intent;
 
@@ -94,7 +91,7 @@ Then('I should not be able to place the Battleship', function () {
 });
 
 Then('I should be able to place the Battleship', function () {
-    const player = this.context.game.getPlayer(this.context.iam);
+    const player = this.context.game.getCurrentPlayer();
 
     const { battleship, x, y, direction } = this.context.intent;
 
@@ -102,13 +99,13 @@ Then('I should be able to place the Battleship', function () {
 });
 
 Then('and see my Battleship at {int}, {int}', function (x, y) {
-    const player = this.context.game.getPlayer(this.context.iam);
+    const player = this.context.game.getCurrentPlayer();
 
     expect(player.hasBattleshipAt(x, y)).to.equal(true);
 });
 
 Then('I should have {int} {string} Battleships', function (amount, size) {
-    const player = this.context.game.getPlayer(this.context.iam);
+    const player = this.context.game.getCurrentPlayer();
 
     expect(player.battleships[size]).to.equal(amount);
 });

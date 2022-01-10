@@ -31,6 +31,14 @@ class Game {
     setCurrentPlayer(num) {
         this.currentPlayerTurn = num;
     }
+
+    getCurrentPlayer() {
+        if (this.currentPlayerTurn === 1) {
+            return this.player1;
+        } else {
+            return this.player2;
+        }
+    }
 }
 
 module.exports = { Game };
