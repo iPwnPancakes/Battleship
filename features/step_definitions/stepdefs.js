@@ -28,10 +28,11 @@ Given('a size {int} Grid', function (size) {
     expect(player.grid).to.equal(grid);
 });
 
-Given('it is Player {int}\'s Turn', function (int) {
-    this.context.game.setCurrentPlayer(int);
+Given('it is Player {int}\'s Turn', function (playerNum) {
+    this.context.game.setPlayer(playerNum, new Player(playerNum));
+    this.context.game.setCurrentPlayer(playerNum);
 
-    expect(this.context.game.currentPlayerTurn).to.equal(int);
+    expect(this.context.game.currentPlayerTurn).to.equal(playerNum);
 });
 
 Given('my {string} Battleship', function (battleshipSize) {
